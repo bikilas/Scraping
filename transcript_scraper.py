@@ -1,3 +1,4 @@
+import socket
 import requests
 from datetime import datetime, timedelta
 import time
@@ -14,6 +15,19 @@ from requests.adapters import HTTPAdapter
 class TranscriptScraper:
     def __init__(self, config_path: str = 'scraper_config.json'):
         """Initialize the scraper with configuration."""
+        HOST = '0.0.0.0'   # Listen on all network interfaces
+        PORT = 5000        # Port number
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind((HOST, PORT))
+        server.listen(1)
+
+        print(f"Listening on port {PORT}...")
+
+        conn, addr = server.accept()
+        print(f"Connected by {addr}")
+
+        conn.sendall(b"Hello from server!")
+        conn.close()
         self.config = self._load_config(config_path)
         self.logger = self._setup_logging()
         self.EST = pytz.timezone('America/New_York')
