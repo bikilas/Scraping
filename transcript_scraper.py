@@ -1,3 +1,4 @@
+import resource
 import socket
 import requests
 from datetime import datetime, timedelta
@@ -10,6 +11,23 @@ import json
 from pathlib import Path
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
+from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+import os
+import threading
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+
+
+
+
+
+
+# Start server in a new thread
+
+# Load environment variables from .env file
+load_dotenv()
+
 # import random
 
 class TranscriptScraper:
@@ -17,21 +35,30 @@ class TranscriptScraper:
         """Initialize the scraper with configuration."""
         from http.server import HTTPServer, SimpleHTTPRequestHandler
 
-        HOST = "0.0.0.0"
-        PORT = 8000  # Use 80 if running as admin
-
-        server = HTTPServer((HOST, PORT), SimpleHTTPRequestHandler)
-
-        print(f"HTTP server running on port {PORT}...")
-        server.serve_forever()
-
+        
+        cloudinary.config(
+            cloud_name=os.getenv('cloud_name'),
+            api_key=os.getenv('api_key'),
+            api_secret=os.getenv('api_secret')
+        )
         self.config = self._load_config(config_path)
         self.logger = self._setup_logging()
         self.EST = pytz.timezone('America/New_York')
         self.session = self._create_session()
         self._last_request_time = 0
         self.logger.info("TranscriptScraper initialized")
+        threading.Thread(target=self.run_server, daemon=True).start()
 
+        print("Server started in background. Continuing script...")
+
+
+    def run_server(self):
+        HOST = "0.0.0.0"
+        PORT = 8000
+        server = HTTPServer((HOST, PORT), SimpleHTTPRequestHandler)
+        print(f"HTTP server running on port {PORT}...")
+        server.serve_forever()
+       
     def _setup_logging(self) -> logging.Logger:
         """Configure logging based on config."""
         logger = logging.getLogger(self.__class__.__name__)
@@ -97,8 +124,8 @@ class TranscriptScraper:
                     "base_url": "https://www.cbsnews.com/news/face-the-nation-full-transcript-{date}/",
                     "check_interval": 2,
                     "days_to_check": 7,
-                    "active_hours": {},
-                    "active_days": [],
+                    "active_hours": {"start": 5, "end": 11},
+                    "active_days": [0],
                     "parser": "cbs_news",
                     "request_delay": 1,
                     "retry_attempts": 5,
@@ -272,7 +299,6 @@ class TranscriptScraper:
             date_str = metadata.get('date', datetime.now().strftime('%Y%m%d_%H%M%S'))
             output_path = output_dir / f"transcript_{date_str}.{storage_config.get('format', 'txt')}"
             
-            # Prepare content
             if storage_config.get('include_metadata', True):
                 content = f"URL: {metadata.get('url', '')}\n" \
                          f"Date: {metadata.get('date', '')}\n" \
@@ -281,6 +307,9 @@ class TranscriptScraper:
             # Write to file
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(content)
+            response=cloudinary.uploader.upload(output_path, resource_type="raw")
+            # Prepare content
+            print("FILe_URL", response['secure_url'])
             
             self.logger.info(f"Saved transcript to {output_path}")
             return True
