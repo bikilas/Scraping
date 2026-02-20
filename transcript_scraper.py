@@ -123,7 +123,7 @@ class TranscriptScraper:
                 "face_the_nation": {
                     "base_url": "https://www.cbsnews.com/news/face-the-nation-full-transcript-{date}/",
                     "check_interval": 2,
-                    "days_to_check": 7,
+                    "days_to_check": 21,
                     "active_hours": {"start": 5, "end": 11},
                     "active_days": [0],
                     "parser": "cbs_news",
@@ -244,8 +244,8 @@ class TranscriptScraper:
         urls = []
         now = self.get_current_est()
     
-        # Check today, yesterday, and past 7 days
-        for days_back in range(7):
+        # Check today, yesterday, and past 21 days
+        for days_back in range(21):
             check_date = now - timedelta(days=days_back)
             url, date_str = self.generate_url(site_name, check_date)
             if url:
