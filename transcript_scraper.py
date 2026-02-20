@@ -15,19 +15,16 @@ from requests.adapters import HTTPAdapter
 class TranscriptScraper:
     def __init__(self, config_path: str = 'scraper_config.json'):
         """Initialize the scraper with configuration."""
-        HOST = '0.0.0.0'   # Listen on all network interfaces
-        PORT = 5000        # Port number
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind((HOST, PORT))
-        server.listen(1)
+        from http.server import HTTPServer, SimpleHTTPRequestHandler
 
-        print(f"Listening on port {PORT}...")
+        HOST = "0.0.0.0"
+        PORT = 8000  # Use 80 if running as admin
 
-        conn, addr = server.accept()
-        print(f"Connected by {addr}")
+        server = HTTPServer((HOST, PORT), SimpleHTTPRequestHandler)
 
-        conn.sendall(b"Hello from server!")
-        conn.close()
+        print(f"HTTP server running on port {PORT}...")
+        server.serve_forever()
+
         self.config = self._load_config(config_path)
         self.logger = self._setup_logging()
         self.EST = pytz.timezone('America/New_York')
