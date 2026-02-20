@@ -14,6 +14,7 @@ from requests.adapters import HTTPAdapter
 from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
+import cloudinary.api
 import os
 import threading
 from http.server import HTTPServer, SimpleHTTPRequestHandler
@@ -308,8 +309,13 @@ class TranscriptScraper:
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(content)
             response=cloudinary.uploader.upload(output_path, resource_type="raw")
+            public_id=response["public_id"]
+            cloudinary.api.add_to_collection("scraped_data",[public_id],resource_type="raw")
             # Prepare content
-            print("FILe_URL", response['secure_url'])
+            # Instead of: print("FILe_URL", response['secure_url'])
+            collection_url = f"https://cloudinary.com/console/collections/scraped_data"
+            print("COLLECTION_URL", collection_url)
+            # print("FILe_URL", response['secure_url'])
             
             self.logger.info(f"Saved transcript to {output_path}")
             return True
