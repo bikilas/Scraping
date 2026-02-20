@@ -8,7 +8,7 @@
         "face-the-nation-{date}/"
       ],
       "check_interval": 2,
-      "days_to_check": 21,
+      "days_to_check": 7,
       "active_hours": {},   
       "active_days": [],                        
       "parser": "cbs_news",
