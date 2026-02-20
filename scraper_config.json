@@ -1,0 +1,53 @@
+{
+  "sites": {
+    "face_the_nation": {
+      "base_url": "https://www.cbsnews.com/news/face-the-nation-full-transcript-{date}/",
+      "url_patterns": [
+        "face-the-nation-full-transcript-{date}/",
+        "face-the-nation-transcript-{date}/",
+        "face-the-nation-{date}/"
+      ],
+      "check_interval": 2,
+      "days_to_check": 7,
+      "active_hours": {},   
+      "active_days": [],                        
+      "parser": "cbs_news",
+      "request_delay": 0.5,
+      "parallel_requests": true,
+      "retry_attempts": 5,
+      "timeout": 15,
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Upgrade-Insecure-Requests": "1"
+      }
+    }
+  },
+  "parsers": {
+    "cbs_news": {
+      "start_markers": ["Full transcript of", "Face the Nation", "MARGARET BRENNAN:"],
+      "end_markers": ["©", "All rights reserved", "This transcript was compiled"],
+      "content_selector": "div.content__body, div.entry__body, article.content",
+      "date_format": "%m-%d-%Y",
+      "date_selector": "time.updated, .date, .timestamp"
+    }
+  },
+  "storage": {
+    "output_dir": "./transcripts",
+    "format": "txt",
+    "include_metadata": true
+  },
+  "logging": {
+    "level": "INFO",
+    "max_size_mb": 10,
+    "backup_count": 5
+  }
+}
