@@ -125,7 +125,7 @@ class TranscriptScraper:
                     "base_url": "https://www.cbsnews.com/news/face-the-nation-full-transcript-{date}/",
                     "check_interval": 2,
                     "days_to_check": 7,
-                    "active_hours": {"start": 4, "end": 11},
+                    "active_hours": {},
                     "active_days": [],
                     "parser": "cbs_news",
                     "request_delay": 1,
