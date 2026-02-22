@@ -20,12 +20,6 @@ import threading
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 
-
-
-
-
-# Start server in a new thread
-
 # Load environment variables from .env file
 load_dotenv()
 
